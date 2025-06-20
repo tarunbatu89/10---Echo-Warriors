@@ -2,19 +2,32 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# Load environment variables from .env
 load_dotenv()
 
-# Initialize the OpenAI client with API key from .env
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generate_tasks_from_prd(prd_text):
     prompt = f"""
-You are a product analyst. Read the following PRD and generate a list of clear Jira tasks:
+You are a technical product analyst.
+
+Your task is to read the following Product Requirements Document (PRD) and:
+- Identify high-level Epics (1 per core feature).
+- For each Epic, create 1–3 relevant user stories.
+- For each story, break it down into 2–5 subtasks (backend, frontend, API, testing, etc.).
+- Classify each story's estimated complexity as Low, Medium, or High.
+
+Return the result in this structured format:
+
+EPIC: <epic name>
+    STORY: <story title> [Complexity: <Low|Medium|High>]
+        - Subtask 1
+        - Subtask 2
+        ...
+
 ---
+
+PRD:
 {prd_text}
----
-Respond only with one task per line.
 """
 
     response = client.chat.completions.create(
@@ -23,6 +36,5 @@ Respond only with one task per line.
         temperature=0.4
     )
 
-    # Extract and split the response into a list of tasks
-    tasks = response.choices[0].message.content.strip().split("\n")
-    return [task.strip("- ").strip() for task in tasks if task.strip()]
+    # The response text contains the structured Epics → Stories → Subtasks
+    return response.choices[0].message.content.strip()
