@@ -1,0 +1,5 @@
+openai
+python-dotenv
+jira
+PyPDF2
+python-docx
