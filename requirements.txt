@@ -3,3 +3,5 @@ python-dotenv
 jira
 PyPDF2
 python-docx
+gspread
+oauth2client

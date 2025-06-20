@@ -1,17 +1,47 @@
-Feature: Add delivery date selection on checkout page
-- User should be able to choose a delivery date
-- Only valid future dates should be selectable
-- Add estimated delivery time banner on cart
+1 : Myntra Loop Tag
 
-Feature: Show shipment tracking inside the order page
-- Show real-time status fetched from shipment API
-- Include estimated arrival time
+Introduction:
+The Myntra Loop Tag feature provides warehouses with the capability to input loop tags specifically for Myntra orders. This functionality ensures compliance with Myntra's packaging requirements and enhances the efficiency of order processing by prompting packers to input loop tag codes during the packing process. This documentation offers detailed insights into the implementation, database significance, prerequisites, and affected APIs associated with the Myntra Loop Tag feature.
 
-Feature: Add delivery date selection on checkout page
-- User should be able to choose a delivery date
-- Only valid future dates should be selectable
-- Add estimated delivery time banner on cart
+---
 
-Feature: Show shipment tracking inside the order page
-- Show real-time status fetched from shipment API
-- Include estimated arrival time
+1. Overview of Myntra Loop Tag:
+The Myntra Loop Tag feature allows warehouses to input loop tags onto Myntra-specific orders. Loop tags are integral to Myntra's packaging process, ensuring that each order is properly tagged for shipping and delivery.
+
+---
+
+2. Database Significance of Myntra Loop Tag:
+
+   a. Order-Level Loop Tagging: Check the column `tableSaleOrder.loopTagged` to determine if an order is loop tag enabled.
+   
+   b. SKU-Level Loop Tagging: Check the column `tableSaleOrderSku.loopTagged` to identify specific SKUs within an order that require or have already been loop tagged.
+   
+   c. Loop Tag Entries: Loop tag entries can be reviewed in the following tables:
+   
+      - `omsXX.channel_loop_tag`
+      - `wmsXX.channel_loop_tag_wms`
+
+---
+
+3. Pre-requisites of Myntra Loop Tag:
+Before implementing the Myntra Loop Tag feature, ensure the following prerequisites are met:
+
+   - The order pulled from the channel must contain the key "itemSealId" in the orderItem or SKU DTO.
+   - If the "itemSealId" key is present, the `loopTagged` field for the corresponding SKU(s) within the order should be set to true.
+
+---
+
+4. Affected APIs:
+The Myntra Loop Tag feature impacts the following APIs within the system:
+
+   a. `/filterexistinglooptags`: Removes existing loop tags from a list input.
+   
+   b. `/looptaggedskus`: Returns the SKU codes of an order for which loop tagging is enabled.
+   
+   c. `/packingboxnew`: This API handles the main process of inputting and saving loop tag values. User-inputted loop tag values are stored in tables `ChannelLoopTagWms`, and the values are updated in `ChannelLoopTag`.
+   
+   d. `/updateitemdetailsinuc`:   This API plays a crucial role in pushing loop tag values onto Unicommerce (UC) after the pack process is completed. Without executing this API, loop tag values will not be synchronized with UC. Failure to push loop tag values onto UC may result in complications during the invoice generation process. Manual input of loop tags on UC would be required in the absence of synchronization, which can be time-consuming and prone to errors. Therefore, it is imperative to ensure that loop tag values are successfully pushed onto UC through the execution of this API after the pack process is done.
+—
+
+5. Importance of Pushing Loop Tags to the Channel:
+Loop tags inputted by packers must also be pushed to the respective channels (UC, SRF, Myntra). Failing to push these loop tag values onto the channel may hinder the generation of shipping labels, especially in the case of Unicommerce (UC).

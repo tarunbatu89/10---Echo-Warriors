@@ -10,11 +10,11 @@ def get_jira_client():
         basic_auth=(os.getenv("JIRA_EMAIL"), os.getenv("JIRA_API_TOKEN"))
     )
 
-def create_jira_task(jira, summary):
+def create_jira_task(jira, summary, description):
     issue_dict = {
         'project': {'key': os.getenv("JIRA_PROJECT_KEY")},
         'summary': summary,
-        'description': 'Auto-created from PRD',
+        'description': description,
         'issuetype': {'name': 'Task'}
     }
     return jira.create_issue(fields=issue_dict)
