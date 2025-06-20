@@ -6,3 +6,12 @@ Feature: Add delivery date selection on checkout page
 Feature: Show shipment tracking inside the order page
 - Show real-time status fetched from shipment API
 - Include estimated arrival time
+
+Feature: Add delivery date selection on checkout page
+- User should be able to choose a delivery date
+- Only valid future dates should be selectable
+- Add estimated delivery time banner on cart
+
+Feature: Show shipment tracking inside the order page
+- Show real-time status fetched from shipment API
+- Include estimated arrival time
